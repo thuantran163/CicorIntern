@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,6 +31,15 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+/* LED DECLARATION */
+#define LED_PORT 	GPIOD
+#define LED_GREEN 	GPIO_PIN_12
+#define LED_ORANGE 	GPIO_PIN_13
+#define LED_RED 	GPIO_PIN_14
+#define LED_BLUE	GPIO_PIN_15
+/* BUTTON DECLARATION*/
+#define BUTTON_PORT GPIOA
+#define BUTTON_PIN GPIO_PIN_0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -39,6 +48,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
@@ -47,6 +57,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -54,6 +65,30 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+/* Semihosting Debugging -------------------*/
+extern void initialise_monitor_handles(void);
+/* UART Debugging-------------------------
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
+/*/
+/* SWO+SWD Debugging ----------------------
+int _write(int file, char *ptr, int len) {
+  int DataIdx;
+  for (DataIdx = 0; DataIdx < len; DataIdx++) {
+    ITM_SendChar(*ptr++);
+  }
+  return len;
+}
+*/
 /* USER CODE END 0 */
 
 /**
@@ -64,6 +99,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+//  initialise_monitor_handles();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -84,7 +120,19 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  for (int i=0; i<10; i++)
+  {
+	  HAL_GPIO_WritePin(LED_PORT, LED_GREEN, GPIO_PIN_SET);
+	  HAL_Delay(100);
+	  HAL_GPIO_WritePin(LED_PORT, LED_GREEN,GPIO_PIN_RESET);
+	  HAL_Delay(100);
+  }
+  HAL_GPIO_WritePin(LED_PORT, LED_ORANGE,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_PORT, LED_RED,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_PORT, LED_BLUE,GPIO_PIN_SET);
+
 
   /* USER CODE END 2 */
 
@@ -92,6 +140,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	 uint8_t status = HAL_GPIO_ReadPin(BUTTON_PORT,BUTTON_PIN);
+	 printf("\n status: %d", status);
+	 HAL_GPIO_WritePin(LED_PORT, LED_GREEN, status);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -146,6 +198,39 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -153,9 +238,9 @@ void SystemClock_Config(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  hello;
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
