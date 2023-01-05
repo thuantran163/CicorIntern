@@ -79,7 +79,7 @@ PUTCHAR_PROTOTYPE
   HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
   return ch;
 }
-/*/
+*/
 /* SWO+SWD Debugging ----------------------
 int _write(int file, char *ptr, int len) {
   int DataIdx;
@@ -99,7 +99,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-//  initialise_monitor_handles();
+  initialise_monitor_handles();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
