@@ -65,7 +65,9 @@ PUTCHAR_PROTOTYPE
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int i = 0;
+uint8_t is_first_captured = 0;
+uint32_t IC_value_fstCaptured  = 0;
+uint32_t IC_value_sndCaptured = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,22 +75,21 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	i++;
 	if(GPIO_Pin == GPIO_PIN_0)
 	{
-		printf("\nnoise: %d", i);
+//		printf("\nnoise: %d", i);
 		HAL_GPIO_TogglePin(LED_PORT, LED_GREEN);
 //		HAL_Delay(1);
 	}
 	else if ( GPIO_Pin == GPIO_PIN_1)
 	{
-		printf("\nnoise: %d", i);
+//		printf("\nnoise: %d", i);
 		HAL_GPIO_TogglePin(LED_PORT, LED_ORANGE);
 //		HAL_Delay(1);
 	}
 	else if(GPIO_Pin == GPIO_PIN_3)
 	{
-		printf("\nnoise: %d", i);
+//		printf("\nnoise: %d", i);
 		HAL_GPIO_TogglePin(LED_PORT, LED_RED);
 //		HAL_Delay(1);
 	}
@@ -99,6 +100,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == &htim2)
 	{
+		 printf("\n Timer2: %d", TIM2->CNT);
 		HAL_GPIO_TogglePin(LED_PORT, LED_BLUE);
 	}
 }
@@ -106,13 +108,40 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 //	if (htim == &htim3)
 //	{
-	if(htim->Instance ==TIM3)
-	{
-		HAL_GPIO_TogglePin(LED_PORT, LED_RED);
-		uint32_t capture_value = __HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_1);
-		__HAL_TIM_SET_COUNTER(&htim2,0);
-	}
+//	if(htim->Instance ==TIM3)
+//	{
+		printf("\n Timer3: %d", TIM3->CNT);
+		HAL_GPIO_TogglePin(LED_PORT, LED_ORANGE);
+		if( is_first_captured ==0 )
+
+		{
+			IC_value_fstCaptured  = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			is_first_captured = 1;
+		}
+		else if(is_first_captured ==1)
+		{
+			IC_value_sndCaptured = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			__HAL_TIM_SET_COUNTER(htim, 0);
+			if(IC_value_sndCaptured>IC_value_fstCaptured)
+			{
+				uint32_t interval_time = IC_value_fstCaptured - IC_value_sndCaptured;
+				printf("\n interval time between two event: %d", interval_time);
+			}
+			is_first_captured = 0;
+		}
 //	}
+//	}
+}
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim->Instance == TIM4)
+	{
+		  printf("\n Timer4: %d", TIM4->CNT);
+		uint32_t capture = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+		HAL_GPIO_TogglePin(LED_PORT, LED_RED);
+		__HAL_TIM_SetCompare(htim, TIM_CHANNEL_1, (capture+100));
+		__HAL_TIM_SET_COUNTER(htim, 0);
+	}
 }
 
 /* USER CODE END PFP */
@@ -171,9 +200,8 @@ int main(void)
 //	  uint8_t status = HAL_GPIO_ReadPin(BUTTON_PORT,BUTTON_PIN);
 //	 	 printf("\n status: %d", status);
 //	  HAL_GPIO_WritePin(LED_PORT, LED_GREEN, status);
-	  printf("\n Timer2: %d", TIM2->CNT);
-	  printf("\n Timer3: %d", TIM3->CNT);
-	  printf("\n Timer4: %d", TIM4->CNT);
+//	  printf("\n Timer2: %d", TIM2->CNT);
+//	  printf("\n Timer3: %d", TIM3->CNT);
 
 
   }
