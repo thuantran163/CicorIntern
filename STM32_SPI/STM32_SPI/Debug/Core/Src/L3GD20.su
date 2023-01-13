@@ -1,6 +1,0 @@
-../Core/Src/L3GD20.c:21:5:L3GD20_Set_WhoAmIRegister	24	static
-../Core/Src/L3GD20.c:28:5:L3GD20_Read_WhoAmIRegister	24	static
-../Core/Src/L3GD20.c:35:5:L3GD20_CheckDefault_WhoAmIRegister	16	static
-../Core/Src/L3GD20.c:46:5:L3GD20_Set_CTRL_REG1	24	static
-../Core/Src/L3GD20.c:60:5:L3GD20_Read_CTRL_REG1	24	static
-../Core/Src/L3GD20.c:75:5:L3GD20_Set_CTRL_REG1_OutputDataRate	4	static

@@ -78,7 +78,12 @@ typedef enum
 	FULL_SCALE_SELECTION_2000DPS	= 0x03
 }FullScale_Selection;
 
-
+typedef enum
+{
+	POWER_DOWN   = 0x00,
+	POWER_SLEEP  = 0x01,
+	POWER_NORMAL = 0x02
+}PowerMode_Selection;
 /*________________________________________DATA STRUCTURES________________________________________*/
 
 typedef struct
@@ -188,6 +193,15 @@ typedef struct
 }INT1_DURATION;
 
 
+typedef struct
+{
+	uint8_t Address;
+	uint8_t Data;
+	uint8_t Direction :1;
+}DataBlock_TransmitReceive_TypeDef;
+
+extern DataBlock_TransmitReceive_TypeDef DataBlock;
+
 
 ///* Peripheral_declaration*/
 //#define CTRL_REG1  ((CTRL_REG1_TypeDef*) CTRL_REG1_BASE)
@@ -266,9 +280,9 @@ typedef struct
 //CTRL_REG2_HPM
 //CTRL_REG2_HPM
 #define CTRL_REG2_HPCF_Pos		0
-#define CTRL_REG2_HPCF_Msk		BF_MASK(CTRL_REG2_HPCF_POS, 4)
+#define CTRL_REG2_HPCF_Msk		BF_MASK(CTRL_REG2_HPCF_Pos, 4)
 #define CTRL_REG2_HPM_Pos		4
-#define CTRL_REG2_HPM_Msk		BF_MASK(CTRL_REG2_HPM_POS, 2)
+#define CTRL_REG2_HPM_Msk		BF_MASK(CTRL_REG2_HPM_Pos, 2)
 //CTRL_REG3_I2_EMPTY
 //CTRL_REG3_I2_ORUN
 //CTRL_REG3_I2_WTM
@@ -317,7 +331,7 @@ typedef struct
 #define CTRL_REG5_HPEN_Pos			5
 #define CTRL_REG5_HPEN_Msk 			BF_MASK( CTRL_REG5_HPEN_Pos, 1)
 #define CTRL_REG5_FIFO_EN_Pos		6
-#define CTRL_REG5_FIFO_EN_Msk		BF_MASK(CTRL_REG5_FIFO_EN, 1)
+#define CTRL_REG5_FIFO_EN_Msk		BF_MASK(CTRL_REG5_FIFO_EN_Pos, 1)
 #define CTRL_REG5_BOOT_Pos			7
 #define CTRL_REG5_BOOT_Msk			BF_MASK(CTRL_REG5_BOOT_Pos, 1)
 
@@ -344,7 +358,7 @@ typedef struct
 #define STATUS_REG_XOR_Pos 			4
 #define STATUS_REG_XOR_Msk			BF_MASK(STATUS_REG_ZYXDA_Pos, 1)
 #define STATUS_REG_YOR_Pos			5
-#define STATUS_REG_YOR_Msk			BF_MASK(STATUS_REF_YOR_Pos, 1)
+#define STATUS_REG_YOR_Msk			BF_MASK(STATUS_REG_YOR_Pos, 1)
 #define STATUS_REG_ZOR_Pos			6
 #define STATUS_REG_ZOR_Msk 			BF_MASK(STATUS_REG_ZOR_Pos, 1)
 #define STATUS_REG_ZYXOR_Pos		7
@@ -426,6 +440,12 @@ typedef struct
 #define INT1_DURATION_D_Msk			BF_MASK(INT1_DURATION_D_Pos, 7)
 #define INT1_DURATION_WAIT_Pos		8
 #define INT1_DURATION_WAIT_Msk 		BF_MASK(INT1_DURATION_WAIT_Pos, 1)
+
+extern DataBlock_TransmitReceive_TypeDef g_DataBlock;
+
+static void MX_SPI1_Init(void);
+
+
 
 
 

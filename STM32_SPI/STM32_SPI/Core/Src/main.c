@@ -4,9 +4,6 @@
 #include "L3GD20.h"
 
 CRC_HandleTypeDef hcrc;
-
-SPI_HandleTypeDef hspi1;
-
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
@@ -15,7 +12,7 @@ osThreadId defaultTaskHandle;
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_SPI1_Init(void);
+//static void MX_SPI1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
@@ -31,7 +28,6 @@ int main(void)
   HAL_Init();
 
   MX_GPIO_Init();
-  MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
@@ -47,13 +43,55 @@ int main(void)
   CTRL_REG1_TypeDef reg2 = {
 		  .Xen = 1,
 		  .Yen = 1,
-		  .Zen = 1,
+		  .Zen = 0,
 		  .PD =  1,
-		  .DR = 2,
-		  .BW = 2
+		  .DR = 1,
+		  .BW = 0
   };
-  L3GD20_Read_CTRL_REG1(&reg);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
+  HAL_Delay(100);
+
+//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
   L3GD20_Set_CTRL_REG1(reg2);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //------------
+  HAL_Delay(100);
+//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
+  L3GD20_Read_CTRL_REG1(&reg);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //-----------
+
+
+	printf("\n data check: %x", reg.Xen);
+	printf("\n data check: %x", reg.Yen);
+	printf("\n data check: %x", reg.Zen);
+	printf("\n data check: %x", reg.PD);
+	printf("\n data check: %x", reg.BW);
+	printf("\n data check: %x", reg.DR);
+	printf("\n");
+
+
+  printf("\n who am i register");
+  printf("\n");
+
+  uint8_t read_data;
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
+  L3GD20_Set_WhoAmIRegister(0b11001101);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //-----------
+  HAL_Delay(100);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
+  L3GD20_Read_WhoAmIRegister(&read_data);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //-----------
+
+  printf("\n data check who_am_i %x", read_data);
+  printf("\n");
+
+  uint8_t flags = L3GD20_CheckDefault_WhoAmIRegister();
+  if ( flags == 1) {
+	  printf("\n WHO_AM_I_ register is default value");
+  }
+
+
 
   while (1)
   {
@@ -124,26 +162,7 @@ static void MX_CRC_Init(void)
 
 }
 
-static void MX_SPI1_Init(void)
-{
 
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
 
 /**
   * @brief TIM1 Initialization Function
@@ -288,18 +307,21 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+
 
   /*Configure GPIO pin : PE3 */
   GPIO_InitStruct.Pin = GPIO_PIN_3;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PE0 PE1 */
@@ -307,6 +329,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
