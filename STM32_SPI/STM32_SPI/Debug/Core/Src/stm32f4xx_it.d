@@ -1,4 +1,6 @@
-Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
+Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c \
+ E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/gpio.h \
+ E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -28,7 +30,7 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Core/Inc/stm32f4xx_it.h \
+ ../Core/Inc/main.h ../Core/Inc/stm32f4xx_it.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
@@ -38,7 +40,8 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-../Core/Inc/main.h:
+E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/gpio.h:
+E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -68,6 +71,7 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
+../Core/Inc/main.h:
 ../Core/Inc/stm32f4xx_it.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:

@@ -292,7 +292,7 @@ extern DataBlock_TransmitReceive_TypeDef DataBlock;
 //CTRL_REG3_I1_BOOT
 //CTRL_REG3_I1_INT1
 #define CTRL_REG3_I2_EMPTY_Pos			0
-#define CTRL_REG3_I2_EMPTY_Msk 			BK_MASK(CTRL_REG3_I2_EMPTY_Pos, 1)
+#define CTRL_REG3_I2_EMPTY_Msk 			BF_MASK(CTRL_REG3_I2_EMPTY_Pos, 1)
 #define CTRL_REG3_I2_ORUN_Pos			1
 #define CTRL_REG3_I2_ORUN_Msk			BF_MASK(CTRL_REG3_I2_ORUN_Pos, 1)
 #define CTRL_REG3_I2_WTM_Pos			2
@@ -443,7 +443,7 @@ extern DataBlock_TransmitReceive_TypeDef DataBlock;
 
 extern DataBlock_TransmitReceive_TypeDef g_DataBlock;
 
-static void MX_SPI1_Init(void);
+
 
 
 

@@ -2,6 +2,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "L3GD20.h"
+#include "gpio.h"
 
 CRC_HandleTypeDef hcrc;
 TIM_HandleTypeDef htim1;
@@ -11,100 +12,183 @@ TIM_HandleTypeDef htim3;
 osThreadId defaultTaskHandle;
 
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
 //static void MX_SPI1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_CRC_Init(void);
 void StartDefaultTask(void const * argument);
+
 extern void initialise_monitor_handles(void);
+
+
 
 
 int main(void)
 {
   initialise_monitor_handles();
-
   HAL_Init();
-
   MX_GPIO_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_CRC_Init();
-
-//  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-//  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-//  osKernelStart();
-
-
-  CTRL_REG1_TypeDef reg;
-  CTRL_REG1_TypeDef reg2 = {
-		  .Xen = 1,
-		  .Yen = 1,
-		  .Zen = 0,
-		  .PD =  1,
-		  .DR = 1,
-		  .BW = 0
-  };
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
-  HAL_Delay(100);
-
-//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
-  L3GD20_Set_CTRL_REG1(reg2);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //------------
-  HAL_Delay(100);
-//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
-  L3GD20_Read_CTRL_REG1(&reg);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //-----------
-
-
-	printf("\n data check: %x", reg.Xen);
-	printf("\n data check: %x", reg.Yen);
-	printf("\n data check: %x", reg.Zen);
-	printf("\n data check: %x", reg.PD);
-	printf("\n data check: %x", reg.BW);
-	printf("\n data check: %x", reg.DR);
-	printf("\n");
-
-
-  printf("\n who am i register");
-  printf("\n");
-
-  uint8_t read_data;
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
-  L3GD20_Set_WhoAmIRegister(0b11001101);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //-----------
-  HAL_Delay(100);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
-  L3GD20_Read_WhoAmIRegister(&read_data);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET); //-----------
-
-  printf("\n data check who_am_i %x", read_data);
-  printf("\n");
-
-  uint8_t flags = L3GD20_CheckDefault_WhoAmIRegister();
-  if ( flags == 1) {
-	  printf("\n WHO_AM_I_ register is default value");
-  }
-
-
-
+  Test_CTRL_REG5();
   while (1)
   {
 
 
   }
-  /* USER CODE END 3 */
 }
 
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+
+void Test_CTRL_REG5(void)
+{
+	CTRL_REG5_TypeDef reg;
+	CTRL_REG5_TypeDef reg5 = {
+			.Out_Sel  = 0b11,
+			.INT1_Sel = 0b10,
+			.HPen 	  = 0,
+			.FIFO_EN  = 1,
+			.BOOT     = 0
+	};
+	L3GD20_Set_CTRL_REG5(reg5);
+	L3GD20_Read_CTRL_REG5(&reg);
+	  printf("\n data check OUT_SEL: %x",  	reg.Out_Sel);
+	  printf("\n data check INT1_SEL: %x",  reg.INT1_Sel);
+	  printf("\n data check HPEN: %x",  	reg.HPen);
+	  printf("\n data check FIFO_EN: %x",   reg.FIFO_EN);
+	  printf("\n data check BOOT %x",  		reg.BOOT);
+	  printf("\n");
+
+}
+
+void Test_CTRL_REG4(void)
+{
+	CTRL_REG4_TypeDef reg;
+	CTRL_REG4_TypeDef reg4 = {
+			.BDU = 1,
+			.BLE = 1,
+			.FS  = 0b00,
+			.SIM = 0
+	};
+	L3GD20_Set_CTRL_REG4(reg4);
+	L3GD20_Read_CTRL_REG4(&reg);
+	  printf("\n data check SIM: %x",  reg.SIM);
+	  printf("\n data check FS: %x",   reg.FS);
+	  printf("\n data check BLE: %x",  reg.BLE);
+	  printf("\n data check BDU: %x",  reg.BDU);
+	  printf("\n");
+};
+void Test_CTRL_REG3(void)
+{
+      CTRL_REG3_TypeDef reg;
+	  CTRL_REG3_TypeDef reg3 = {
+			  .I2_Empty = 0,
+			  .I2_ORun = 1,
+			  .I2_WTM = 1,
+			  .I2_DRDY = 1,
+			  .PP_OD = 1,
+			  .H_Lactive = 0,
+			  .I1_Boot = 1,
+			  .I1_Int1 = 0.
+	  };
+	  L3GD20_Set_CTRL_REG3(reg3);
+	  L3GD20_Read_CTRL_REG3(&reg);
+		  printf("\n data check I2_Empty: %x", reg.I2_Empty);
+		  printf("\n data check I2_ORun: %x", reg.I2_ORun);
+		  printf("\n data check I2_WTM: %x",  reg.I2_WTM);
+		  printf("\n data check I2_DRDY: %x", reg.I2_DRDY);
+		  printf("\n data check PP_OD: %x",   reg.PP_OD);
+		  printf("\n data check H_Lactive: %x", reg.H_Lactive);
+		  printf("\n data check I1_Boot: %x", reg.I1_Boot);
+		  printf("\n data check I1_Int1: %x", reg.I1_Int1);
+		  printf("\n");
+};
+
+void Test_CTRL_REG2(void)
+{
+	  CTRL_REG2_TypeDef reg;
+	  CTRL_REG2_TypeDef reg2 = {
+			 .HPCF = 0b0101,
+			 .HPM  = 0b10,
+	  };
+
+	//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  L3GD20_Set_CTRL_REG2(reg2);
+	//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  L3GD20_Read_CTRL_REG2(&reg);
+
+	  printf("\n data check HPCF: %x", reg.HPCF);
+	  printf("\n data check HPM: %x", reg.HPM);
+	  printf("\n");
+
+	  L3GD20_Set_CTRL_REG2_HighPassFilterMode(HIGH_PASS_FILTER_AUTORESET_MODE);
+	  L3GD20_Set_CTRL_REG2_HighPassFilter_CutOffFrequency(0b0111);
+	  L3GD20_Read_CTRL_REG2(&reg);
+
+	  printf("\n data check HPCF: %x", reg.HPCF);
+	  printf("\n data check HPM: %x", reg.HPM);
+	  printf("\n");
+};
+
+void Test_CTRL_REG1(void)
+{
+	  CTRL_REG1_TypeDef reg;
+	  CTRL_REG1_TypeDef reg2 = {
+			  .Xen = 1,
+			  .Yen = 1,
+			  .Zen = 0,
+			  .PD =  1,
+			  .BW = 0,
+			  .DR = 2
+	  };
+
+	//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  L3GD20_Set_CTRL_REG1(reg2);
+	//  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  L3GD20_Read_CTRL_REG1(&reg);
+
+		//  printf("\n data check Xen: %x", reg.Xen);
+		//  printf("\n data check Yen: %x", reg.Yen);
+		//  printf("\n data check Zen: %x", reg.Zen);
+		//  printf("\n data check PD: %x", reg.PD);
+		//  printf("\n data check BW: %x", reg.BW);
+		//  printf("\n data check DR: %x", reg.DR);
+		//  printf("\n");
+	//  printf("\n who am i register");
+	//  printf("\n");
+	  uint8_t read_data;
+
+	  L3GD20_Set_WhoAmIRegister(0b11001101);
+	  L3GD20_Read_WhoAmIRegister(&read_data);
+
+	//  printf("\n data check who_am_i %x", read_data);
+	//  printf("\n");
+
+	  uint8_t flags = L3GD20_CheckDefault_WhoAmIRegister();
+	  if ( flags == 1) {
+		  printf("\n WHO_AM_I_ register is default value");
+		  printf("\n");
+	  }
+
+	//  uint8_t rate = ODR_CONF_760HZ;
+
+	  L3GD20_Set_CTRL_REG1_OutputDataRate(ODR_CONF_760HZ);
+	  uint8_t bandwidth = 0b11;
+	  L3GD20_Set_CTRL_REG1_BandWidth(bandwidth);
+	  L3GD20_Set_CTRL_REG1_PowerMode(POWER_DOWN);
+
+	  L3GD20_Read_CTRL_REG1(&reg);
+	  printf("\n data check Xen: %x", reg.Xen);
+	  printf("\n data check Yen: %x", reg.Yen);
+	  printf("\n data check Zen: %x", reg.Zen);
+	  printf("\n data check PD: %x", reg.PD);
+	  printf("\n data check BW: %x", reg.BW);
+	  printf("\n data check DR: %x", reg.DR);
+	  printf("\n");
+};
+
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -301,49 +385,6 @@ static void MX_TIM3_Init(void)
   }
 }
 
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-
-
-  /*Configure GPIO pin : PE3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PE0 PE1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-
-  GPIO_InitStruct.Pin = GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-}
 
 void StartDefaultTask(void const * argument)
 {

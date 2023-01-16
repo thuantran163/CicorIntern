@@ -1,6 +1,8 @@
 "./Core/Src/L3GD20_util.o"
 "./Core/Src/freertos.o"
+"./Core/Src/gpio.o"
 "./Core/Src/main.o"
+"./Core/Src/spi.o"
 "./Core/Src/stm32f4xx_hal_msp.o"
 "./Core/Src/stm32f4xx_it.o"
 "./Core/Src/sysmem.o"

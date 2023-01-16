@@ -1,4 +1,6 @@
-Core/Src/L3GD20_util.o: ../Core/Src/L3GD20_util.c ../Core/Src/L3GD20.h \
+Core/Src/L3GD20_util.o: ../Core/Src/L3GD20_util.c \
+ E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/gpio.h \
+ E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -27,8 +29,11 @@ Core/Src/L3GD20_util.o: ../Core/Src/L3GD20_util.c ../Core/Src/L3GD20.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
-../Core/Src/L3GD20.h:
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
+ ../Core/Inc/L3GD20.h ../Core/Inc/gpio.h ../Core/Inc/spi.h \
+ ../Core/Inc/main.h
+E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/gpio.h:
+E:/Projects/Software/STM32/Lecture1/STM32_SPI/STM32_SPI/Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -58,3 +63,7 @@ Core/Src/L3GD20_util.o: ../Core/Src/L3GD20_util.c ../Core/Src/L3GD20.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
+../Core/Inc/L3GD20.h:
+../Core/Inc/gpio.h:
+../Core/Inc/spi.h:
+../Core/Inc/main.h:

@@ -8,55 +8,41 @@
 #include "L3GD20.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_spi.h"
-extern void initialise_monitor_handles(void);
+#include "gpio.h"
+#include "spi.h"
 
-SPI_HandleTypeDef hspi1;
 
-static void MX_SPI1_Init(void)
-{
-
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
 int Get_DataBlock(uint8_t assign_address, uint8_t *assign_value )
 {
 	MX_SPI1_Init();
-	uint8_t tx_data = assign_address | 0x80 ;
-	printf("\n get address:  %x", tx_data);
+	MX_GPIO_Init();
+	uint8_t tx_data[2] = {assign_address | 0x80, 0};
+	printf("\n transmit_address:  %x", tx_data[0]);
 	printf("\n");
 	uint8_t get_value[2];
-	HAL_SPI_TransmitReceive(&hspi1, &tx_data, get_value,1, 1000);
-	printf("\n get value:  %x", get_value);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET); //-----------
+	HAL_SPI_TransmitReceive(&hspi1, tx_data, get_value, 2, 1000);
+	HAL_Delay(100);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);   //-----------
+	printf("\n receive_data:  %x", get_value[0]);
+	printf("\n receive_data:  %x", get_value[1]);
 	printf("\n");
-
 	*assign_value = get_value[1];
-
 	return 1;
 };
 int Set_DataBlock(uint8_t assign_address, uint8_t assign_value)
 {
+	MX_GPIO_Init();
 	MX_SPI1_Init();
 	uint8_t tx_data[2] = {assign_address  , assign_value};
-	uint8_t return_value;
-	printf("\n address transmit:  %x", tx_data[0]);
-	printf("\n data transmit:  %x", tx_data[1]);
+	uint8_t return_value[2];
+	printf("\n transmit_address:  %x", tx_data[0]);
+	printf("\n transmit_data:  %x", tx_data[1]);
 	printf("\n");
-
-	HAL_SPI_TransmitReceive(&hspi1, tx_data, &return_value, 2, 1000);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);   //-----------
+	HAL_SPI_TransmitReceive(&hspi1, tx_data, return_value, 2, 1000);
+	HAL_Delay(100);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);     //-----------
 	return 1;
 };
 
@@ -133,6 +119,7 @@ int L3GD20_Set_CTRL_REG1_OutputDataRate(ODR_Configuration Mode)
 	uint8_t address = CTRL_REG1_BASE;
 	uint8_t return_value = 0;
 	Get_DataBlock(address, &return_value);
+//	printf("\n Mode: %x", Mode);
 	switch(Mode)
 	{
 	case ODR_CONF_95HZ:
@@ -158,8 +145,11 @@ int L3GD20_Set_CTRL_REG1_BandWidth (uint8_t BandWidth_Selection)
 	uint8_t address = CTRL_REG1_BASE;
 	uint8_t return_value = 0;
 	Get_DataBlock(address, &return_value);
+//	printf("\n BandWidth_Selection %x", BandWidth_Selection);
 	BandWidth_Selection = _BF_PREP(BandWidth_Selection, 0, 2);
+//	printf("\n BandWidth_Selection %x", BandWidth_Selection);
 	return_value = BFN_SET(return_value, BandWidth_Selection, CTRL_REG1_BW);
+//	printf("\n return value: %x", return_value);
 	Set_DataBlock(address, return_value);
 };
 
@@ -172,9 +162,9 @@ int L3GD20_Set_CTRL_REG1_PowerMode (PowerMode_Selection Mode)
 	{
 		case POWER_DOWN:
 			return_value = BFN_SET(return_value, 0b0, CTRL_REG1_PD);
-			return_value = BFN_SET(return_value, 0b1, CTRL_REG1_XEN);
-			return_value = BFN_SET(return_value, 0b1, CTRL_REG1_YEN);
-			return_value = BFN_SET(return_value, 0b1, CTRL_REG1_ZEN);
+			return_value = BFN_SET(return_value, 0b0, CTRL_REG1_XEN);
+			return_value = BFN_SET(return_value, 0b0, CTRL_REG1_YEN);
+			return_value = BFN_SET(return_value, 0b0, CTRL_REG1_ZEN);
 			break;
 		case POWER_SLEEP:
 			return_value = BFN_SET(return_value, 0b1, CTRL_REG1_PD);
@@ -186,6 +176,8 @@ int L3GD20_Set_CTRL_REG1_PowerMode (PowerMode_Selection Mode)
 			return_value = BFN_SET(return_value, 0b1, CTRL_REG1_PD);
 			break;
 	}
+	Set_DataBlock(address, return_value);
+
 };
 
 int L3GD20_Set_CTRL_REG2(CTRL_REG2_TypeDef reg)
@@ -227,7 +219,6 @@ int L3GD20_Set_CTRL_REG2_HighPassFilterMode (HighPassFilterMode_Configuration  M
 	}
 	Set_DataBlock(address, return_value);
 };
-
 
 int L3GD20_Set_CTRL_REG2_HighPassFilter_CutOffFrequency (uint8_t HPF_CutOff_Freq)
 {
@@ -364,11 +355,4 @@ int L3GD20_Read_FIFO_CTRL_REG(FIFO_CTRL_REG_TypeDef *reg)
 };
 
 
-
-
-
-//int L3GD20_Set_FIFO_SRC_REG(FIFO_SRC_REG_TypeDef *reg)
-//{
-//
-//};
 
