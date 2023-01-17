@@ -21,9 +21,6 @@ void StartDefaultTask(void const * argument);
 
 extern void initialise_monitor_handles(void);
 
-
-
-
 int main(void)
 {
   initialise_monitor_handles();
@@ -33,14 +30,85 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_CRC_Init();
-  Test_CTRL_REG5();
+  L3GD20_Init();
+  FIFO_SRC_REG_TypeDef fifo_src_reg;
+  L3GD20_Read_FIFO_SRC_REG(fifo_src_reg);
+  printf("\n data check FSS: %x",  	 fifo_src_reg.FSS);
+  printf("\n data check EMPTY: %x",  fifo_src_reg.EMPTY);
+  printf("\n data check OVRN: %x",   fifo_src_reg.OVRN);
+  printf("\n data check WTM: %x",    fifo_src_reg.WTM);
+  printf("\n");
+  OutValue_TypeDef out_value;
+
   while (1)
   {
-
+	  L3GD20_Read_Data(&out_value);
+	  printf("\n data check OUT_X %X", out_value.OUT_X);
+	  printf("\n data check OUT_Y %X", out_value.OUT_Y);
+	  printf("\n data check OUT_Z %X", out_value.OUT_Z );
+	  printf("\n");
 
   }
 }
 
+
+
+void L3GD20_Init(void)
+{
+  CTRL_REG1_TypeDef reg1 = {
+				  .Xen = 1,
+				  .Yen = 1,
+				  .Zen = 1,
+				  .PD =  1,
+				  .BW = 0b11,
+				  .DR = 0b11
+		  };
+
+  //  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+  L3GD20_Set_CTRL_REG1(reg1);
+
+  CTRL_REG2_TypeDef reg2 = {
+    .HPCF  = 0b1011,
+	.HPM   = 0b00,
+  };
+
+  L3GD20_Set_CTRL_REG2(reg2);
+
+  CTRL_REG3_TypeDef reg3 = {
+ 			  .I2_Empty = 0,
+ 			  .I2_ORun = 1,
+ 			  .I2_WTM = 1,
+ 			  .I2_DRDY = 1,
+ 			  .PP_OD = 1,
+ 			  .H_Lactive = 1,
+ 			  .I1_Boot = 1,
+ 			  .I1_Int1 = 1.
+ 	  };
+  L3GD20_Set_CTRL_REG3(reg3);
+
+  CTRL_REG4_TypeDef reg4 = {
+  			.BDU = 0,
+  			.BLE = 0,
+  			.FS  = 0b11,
+  			.SIM = 0
+  	};
+  L3GD20_Set_CTRL_REG4(reg4);
+
+  CTRL_REG5_TypeDef reg5 = {
+  				.Out_Sel  = 0b11,
+  				.INT1_Sel = 0b11,
+  				.HPen 	  = 1,
+  				.FIFO_EN  = 1,
+  				.BOOT     = 0
+  		};
+  L3GD20_Set_CTRL_REG5(reg5);
+
+  FIFO_CTRL_REG_TypeDef fifo_ctrl_reg = {
+		  .WTM = 0b1110,
+		  .FM  = 0b001,
+  };
+  L3GD20_Set_FIFO_CTRL_REG(fifo_ctrl_reg);
+};
 
 void Test_CTRL_REG5(void)
 {

@@ -155,7 +155,7 @@ typedef struct
 	uint8_t EMPTY	: 1;
 	uint8_t OVRN 	: 1;
 	uint8_t WTM		: 1;
-}FIFO_SRC_REF_TypeDef;
+}FIFO_SRC_REG_TypeDef;
 
 typedef struct
 {
@@ -181,16 +181,23 @@ typedef struct
 
 typedef struct
 {
+	uint16_t OUT_X;
+	uint16_t OUT_Y;
+	uint16_t OUT_Z;
+}OutValue_TypeDef;
+
+typedef struct
+{
 	uint16_t  	THS_X 	: 15;
 	uint16_t	THS_y	: 15;
 	uint16_t	THS_Z	: 15;
-}INT1_THS_VALUE;
+}INT1_THS_Value_TypeDef;
 
 typedef struct
 {
 	uint8_t WAIT		: 1;
 	uint8_t DURATION 	: 7;
-}INT1_DURATION;
+}INT1_Duration_TypeDef;
 
 
 typedef struct

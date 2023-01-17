@@ -354,5 +354,51 @@ int L3GD20_Read_FIFO_CTRL_REG(FIFO_CTRL_REG_TypeDef *reg)
 	reg->WTM   = BFN_GET(return_value, FIFO_CTRL_WTM);
 };
 
+int L3GD20_Read_FIFO_SRC_REG(FIFO_SRC_REG_TypeDef *reg)
+{
+	uint8_t address = FIFO_CTRL_REG_BASE;
+	uint8_t return_value = 0;
+	Get_DataBlock(address, &return_value);
+	reg->EMPTY  = BFN_GET(return_value, FIFO_SRC_EMPTY );
+	reg->FSS    = BFN_GET(return_value, FIFO_SRC_FSS);
+	reg->OVRN	= BFN_GET(return_value, FIFO_SRC_OVRN);
+	reg->WTM 	= BFN_GET(return_value, FIFO_SRC_WTM);
+};
+int L3GD20_Read_DATACAPTURE(uint8_t *data)
+{
+	uint8_t address = REFERENCE_BASE;
+	Get_DataBlock(address, data);
+};
+int L3GD20_Read_OUTTEMP(uint8_t *data)
+{
+	uint8_t address = OUT_TEMP_BASE;
+	Get_DataBlock(address, data);
+};
+int L3GD20_Read_Data(OutValue_TypeDef *outvalue)
+{
+	uint8_t data;
+	uint8_t address = OUT_X_L_BASE;
+	Get_DataBlock(address, &data);
+	outvalue->OUT_X = _BF_PREP(data, 0, 8);
+	address = OUT_X_H_BASE;
+	Get_DataBlock(address, &data);
+	outvalue->OUT_X |= _BF_PREP(data, 8, 8);
+
+	address = OUT_Y_L_BASE;
+	Get_DataBlock(address, &data);
+	outvalue->OUT_Y = _BF_PREP(data, 0, 8);
+	address = OUT_Y_H_BASE;
+	Get_DataBlock(address, &data);
+	outvalue->OUT_Y |= _BF_PREP(data, 8, 8);
+
+	address = OUT_Z_L_BASE;
+	Get_DataBlock(address, &data);
+	outvalue->OUT_Z = _BF_PREP(data, 0, 8);
+	address = OUT_Z_H_BASE;
+	Get_DataBlock(address, &data);
+	outvalue->OUT_Z |= _BF_PREP(data, 8, 8);
+};
+
+
 
 

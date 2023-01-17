@@ -22,3 +22,7 @@
 ../Core/Src/L3GD20_util.c:325:5:L3GD20_Read_STATUS_REG	24	static
 ../Core/Src/L3GD20_util.c:340:5:L3GD20_Set_FIFO_CTRL_REG	24	static
 ../Core/Src/L3GD20_util.c:348:5:L3GD20_Read_FIFO_CTRL_REG	24	static
+../Core/Src/L3GD20_util.c:357:5:L3GD20_Read_FIFO_SRC_REG	24	static
+../Core/Src/L3GD20_util.c:367:5:L3GD20_Read_DATACAPTURE	24	static
+../Core/Src/L3GD20_util.c:372:5:L3GD20_Read_OUTTEMP	24	static
+../Core/Src/L3GD20_util.c:377:5:L3GD20_Read_Data	24	static
